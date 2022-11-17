@@ -8,7 +8,7 @@ import pandas as pd
 
 # hard-coded paths
 pre_root = 'C:\\Users\\Richard.Bankoff\\Box\\Centre ValBio\\Centre ValBio Incoming Data\\Climate\\dataCleaningFolder\\climate_out2.csv'
-pre_outfile_name = 'C:\\Users\\Richard.Bankoff\\Box\\Centre ValBio\\Centre ValBio Incoming Data\\Climate\\dataCleaningFolder\\climate_date_fixed.csv'
+pre_outfile_name = 'C:\\Users\\Richard.Bankoff\\Box\\Centre ValBio\\Centre ValBio Incoming Data\\Climate\\dataCleaningFolder\\climate_date_fixed2.csv'
 
 # clean up leading/trailing whitespace - unnecessary for hard-coded variables, but good to leave in just in case
 root = pre_root.strip()
@@ -17,7 +17,7 @@ months_with_28 = [2]
 months_with_30 = [9, 4, 6, 11]
 months_with_31 = [1, 3, 5, 7, 8, 10, 12]
 
-leap_years = ["2000", "2004", "2008", "2012", "2016", "2020", "2024", "2028", "2032", "2036", "2040", "2044", "2048"]
+# leap_years = [2000, 2004, 2008, 2012, 2016, 2020, 2024, 2028, 2032, 2036, 2040, 2044, 2048, 2052, 2054]
 # read in list of Excel files for concatenation
 exception_counter = 0
 line_counter = 0
@@ -35,6 +35,13 @@ for x in file_for_date_cleanup['TIMESTAMP']:
         last_year = int(last_year)
         last_month = int(last_month)
         last_day = int(last_day)
+        is_leap_year = False
+        if last_year % 4 == 0:
+            if last_year % 100 == 0:
+                if last_year % 400 == 0:
+                    is_leap_year = True
+            else:
+                is_leap_year = True
         next_year = ''
         next_month = ''
         next_day = ''
@@ -44,7 +51,7 @@ for x in file_for_date_cleanup['TIMESTAMP']:
             next_year = last_year
         if last_day == 28:
             if last_month in months_with_28:
-                if last_year in leap_years:
+                if is_leap_year is True:
                     next_day = 29
                     next_month = last_month
                     next_year = last_year
@@ -114,5 +121,6 @@ print(exception_counter)
 # enough to be put into .xlsx format, replace
 # to_csv() with to_excel on the line below
 # excl_merged.to_csv(outfile_name, index=False)
+file_for_date_cleanup = file_for_date_cleanup.drop_duplicates()
 file_for_date_cleanup.to_csv(outfile_name, index=False)
 exit()
